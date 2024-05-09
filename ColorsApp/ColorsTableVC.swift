@@ -8,25 +8,50 @@
 import UIKit
 
 class ColorsTableVC: UIViewController {
+    
+    var colors: [UIColor] = []
+    
+    enum Cells {
+        static let ColorCell = "ColorCell"
+    }
+    
+    enum Segues {
+        static let ToColorsDetailVC = "ToColorsDetailVC"
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        addRandomColors()
     }
+    
+    func addRandomColors() {
+        for _ in 0..<50 {
+            colors.append(.random())
+        }
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destVC = segue.destination as! ColorDetailVC
+        destVC.color = sender as? UIColor
+    } 
     
 }
 
 extension ColorsTableVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 50
+        return colors.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return UITableViewCell()
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: Cells.ColorCell) else {
+            return UITableViewCell()
+        }
+        cell.backgroundColor = colors[indexPath.row]
+        return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        performSegue(withIdentifier: "ToColorsDetailVC", sender: nil)
+        let color = colors[indexPath.row]
+        performSegue(withIdentifier: Segues.ToColorsDetailVC, sender: color)
     }
 }
